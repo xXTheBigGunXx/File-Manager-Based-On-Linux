@@ -3,7 +3,7 @@
 #include <cstddef>
 
 class CommandLineData{
-    public:
+    private:
     size_t len;
     char** data;
     public:

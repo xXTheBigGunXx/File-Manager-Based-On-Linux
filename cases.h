@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <exception>
+#include <unordered_map>
 
 namespace xx
 {

@@ -4,15 +4,21 @@ using namespace xx;
 
 int CommandTable::DistributeCommands(const CommandLineData& CData)
 {
+    std::unordered_map<std::string, bool(*)(const CommandLineData&)> hashMapOfFunction = 
+    {
+        {"rm", Commands::RemoveFiles},
+        {"touch", Commands::CreateFile},
+        {"echo", Commands::CreateAndWrite},
+        {"mv", Commands::Rename}
+    };
+
     if(CData.GetLength() == 0)
     {
         std::cout << "Length is 0" <<std::endl;
         return -1;
     }
 
-    const char* temp = CData.GetArgument(0);
-
-    if(temp == nullptr)
+    if(CData.GetArgument(0) == nullptr)
     {
         std::cout << "No second argument" << std::endl;
         return -1;
@@ -20,13 +26,11 @@ int CommandTable::DistributeCommands(const CommandLineData& CData)
 
     const std::string CComand = std::string(CData.GetArgument(0));
 
-    if(CComand == "rm")
+    if(hashMapOfFunction.find(CComand) == hashMapOfFunction.end())
     {
-        Commands::RemoveFiles(CData);
+        return false;
     }
-    else if (true)
-    {
 
-    }
-    return -1;
+    auto func = hashMapOfFunction.at(CComand);
+    return func(CData);
 }
