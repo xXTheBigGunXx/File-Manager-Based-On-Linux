@@ -3,12 +3,13 @@
 
 CommandLineData::CommandLineData(int argc, char* argv[])
 {
-    len = static_cast<size_t>(argc);
+    len = static_cast<size_t>(argc - 1);
     data = new char*[len];
+
     for(size_t i = 0; i < len; i++)
     {
-        data[i] = new char[strlen(argv[i] + 1)];
-        strcpy(data[i], argv[i]);
+        data[i] = new char[strlen(argv[i + 1] + 1)];
+        strcpy(data[i], argv[i + 1]);
     }
 }
 

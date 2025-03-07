@@ -3,7 +3,7 @@
 #include <cstddef>
 
 class CommandLineData{
-    private:
+    public:
     size_t len;
     char** data;
     public:
@@ -12,7 +12,5 @@ class CommandLineData{
     char* GetArgument(int index) const;
     size_t GetLength() const;
 };
-
-//#include "data.cpp"
 
 #endif

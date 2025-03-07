@@ -2,17 +2,20 @@
 #define CASES_H
 
 #include "data.h"
+#include "commandImplementation.h"
 #include <string>
-#include <filesystem>
 #include <iostream>
+#include <exception>
 
-class CommandTable{
-private:
-public:
-    CommandTable();
-    static int DistributeCommands(const CommandLineData& data);
-};
+namespace xx
+{
 
-//#include "cases.cpp"
+    class CommandTable{
+    private:
+    public:
+        CommandTable();
+        static int DistributeCommands(const CommandLineData& CData);
+    };
+}
 
 #endif
