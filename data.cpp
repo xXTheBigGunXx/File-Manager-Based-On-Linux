@@ -8,7 +8,7 @@ CommandLineData::CommandLineData(int argc, char* argv[])
 
     for(size_t i = 0; i < len; i++)
     {
-        data[i] = new char[strlen(argv[i + 1] + 1)];
+        data[i] = new char[strlen(argv[i + 1]) + 1];
         strcpy(data[i], argv[i + 1]);
     }
 }
@@ -22,16 +22,14 @@ CommandLineData::~CommandLineData()
     delete[] data;
 }
 
-char* CommandLineData::GetArgument(int index) const
+const char* CommandLineData::GetArgument(int index) const
 {
     if(index < 0 || this->len <= index)
     {
         return nullptr;
     }
 
-    char* argument = new char[this->len];
-    strcpy(argument, this->data[index]);
-    return argument;
+    return this->data[index];
 }
 
 size_t CommandLineData::GetLength() const

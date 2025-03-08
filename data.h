@@ -9,7 +9,7 @@ class CommandLineData{
     public:
     CommandLineData(int argc, char* argv[]);
     ~CommandLineData();
-    char* GetArgument(int index) const;
+    const char* GetArgument(int index) const;
     size_t GetLength() const;
 };
 
