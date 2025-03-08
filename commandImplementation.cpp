@@ -1,6 +1,6 @@
 #include "commandImplementation.h"
 
-bool Commands::RemoveFiles(const CommandLineData CData)
+bool Commands::RemoveFiles(const CommandLineData& CData)
 {
     for(size_t i = 1; i < CData.GetLength(); i++)
     {
@@ -11,7 +11,7 @@ bool Commands::RemoveFiles(const CommandLineData CData)
     return true;
 }
 
-bool Commands::CreateFile(const CommandLineData CData)
+bool Commands::CreateFile(const CommandLineData& CData)
 {
     for(size_t i = 1; i < CData.GetLength(); i++)
     {
@@ -24,7 +24,7 @@ bool Commands::CreateFile(const CommandLineData CData)
     return true;
 }
 
-bool Commands::CreateAndWrite(const CommandLineData CData)
+bool Commands::CreateAndWrite(const CommandLineData& CData)
 {
     if(CData.GetLength() != 4)
         return false;  
@@ -43,7 +43,7 @@ bool Commands::CreateAndWrite(const CommandLineData CData)
     return true;
 }
 
-bool Commands::Rename(const CommandLineData CData)
+bool Commands::Rename(const CommandLineData& CData)
 {
     if(CData.GetLength() != 3)
         return false;
@@ -51,7 +51,7 @@ bool Commands::Rename(const CommandLineData CData)
     return true;
 }
 
-bool Commands::PrintContent(const CommandLineData CData)
+bool Commands::PrintContent(const CommandLineData& CData)
 {
     if(CData.GetLength() == 2)
     {
@@ -99,21 +99,21 @@ bool Commands::PrintContent(const CommandLineData CData)
     }
 }
 
-bool Commands::MakeDirectory(const CommandLineData CData)
+bool Commands::MakeDirectory(const CommandLineData& CData)
 {
     if(CData.GetLength() != 2)
         throw std::runtime_error("!!!");
     return std::filesystem::create_directories(std::string(CData.GetArgument(1)));   
 }
 
-bool Commands::RemoveDirectory(const CommandLineData CData)
+bool Commands::RemoveDirectory(const CommandLineData& CData)
 {
     if(CData.GetLength() != 2)
         throw std::runtime_error("!!!");
     return std::filesystem::remove(std::string(CData.GetArgument(1)));
 }
 
-bool Commands::ListFiles(const CommandLineData CData)
+bool Commands::ListFiles(const CommandLineData& CData)
 {
     const std::filesystem::path filesPath = std::filesystem::current_path();
     for(const auto& i : std::filesystem::directory_iterator(filesPath))
@@ -123,13 +123,8 @@ bool Commands::ListFiles(const CommandLineData CData)
     return true;
 }
 
-bool Commands::FindFile(const CommandLineData CData)
+bool Commands::FindFile(const CommandLineData& CData)
 {
-    /*std::cout << CData.GetLength() << std::endl;
-    for(size_t i = 0; i < CData.GetLength(); i++)
-        std::cout <<CData.GetArgument(i) << std::endl;
-    return false;*/
-
     if(CData.GetLength() != 4)
         throw std::runtime_error("!!!");
     
@@ -137,22 +132,27 @@ bool Commands::FindFile(const CommandLineData CData)
     std::string options = std::string(CData.GetArgument(2));
     std::string filesName = std::string(CData.GetArgument(3));
 
-    //std::filesystem::current_path(directPath);
-
     if (!std::filesystem::exists(directPath) || !std::filesystem::is_directory(directPath))
         throw std::runtime_error("Invalid directory!");
 
-    //std::cout << directPath << " " << options << " " << filesName << std::endl;
-    //return true;
-    std::string name = LoopDirectory(directPath, filesName);
-    std::cout << name << '\n';
+    if(directPath.compare(".") == 0 || options[0] == '-')
+    {
+        directPath = std::filesystem::current_path();
+    }
+
+    const std::string name = LoopDirectory(directPath, filesName);
+    if(name.empty() == 0)
+    {
+        std::cout << name << '\n';
+        return true;
+    }
+
+    std::cout << "File is not found." << '\n';
     return true;
 }
 
-std::string Commands::LoopDirectory(std::filesystem::path directoriesPath, std::string fileName)
+std::string Commands::LoopDirectory(std::filesystem::path& directoriesPath, const std::string& fileName)
 {
-    //std::cout << "Searching in: " << directoriesPath << std::endl;
-
     for (const auto& i : std::filesystem::directory_iterator(directoriesPath))
     {
         std::filesystem::path filesOrDirecPath = i.path();
@@ -160,17 +160,15 @@ std::string Commands::LoopDirectory(std::filesystem::path directoriesPath, std::
         if (std::filesystem::is_directory(filesOrDirecPath))
         {
             std::string result = LoopDirectory(filesOrDirecPath, fileName);
-            if (!result.empty())  // If found, return immediately
+            if (!result.empty())
                 return result;
         }
         else if (std::filesystem::is_regular_file(filesOrDirecPath))
         {
             if (filesOrDirecPath.filename().string() == fileName)
-            {
-                return filesOrDirecPath.string();  // Return full path of found file
-            }
+                return filesOrDirecPath.string();
         }
     }
     
-    return "";  // File not found
+    return "";
 }

@@ -2,9 +2,9 @@
 
 using namespace xx;
 
-int CommandTable::DistributeCommands(const CommandLineData CData)
+int CommandTable::DistributeCommands(const CommandLineData& CData)
 {
-    std::unordered_map<std::string, bool(*)(const CommandLineData)> hashMapOfFunction = 
+    std::unordered_map<std::string, bool(*)(const CommandLineData&)> hashMapOfFunction = 
     {
         {"rm", Commands::RemoveFiles},
         {"touch", Commands::CreateFile},
@@ -14,7 +14,7 @@ int CommandTable::DistributeCommands(const CommandLineData CData)
         {"mkdir", Commands::MakeDirectory},
         {"rmdir", Commands::RemoveDirectory},
         {"ls", Commands::ListFiles},
-        {"find", Commands::FindFile}
+        {"find", Commands::FindFile},
     };
 
     if(CData.GetLength() == 0)
@@ -36,13 +36,6 @@ int CommandTable::DistributeCommands(const CommandLineData CData)
         return false;
     }
 
-    /*std::cout << "Arguments count: " << CData.GetLength() << std::endl;
-    for (int i = 0; i < CData.GetLength(); i++)
-    {
-        std::cout << "Arg " << i << ": " << CData.GetArgument(i) << std::endl;
-    }*/
-
     auto func = hashMapOfFunction.at(CComand);
     return func(CData);
-    //return true;
 }

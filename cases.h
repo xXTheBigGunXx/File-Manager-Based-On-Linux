@@ -15,7 +15,7 @@ namespace xx
     private:
     public:
         CommandTable();
-        static int DistributeCommands(const CommandLineData CData);
+        static int DistributeCommands(const CommandLineData& CData);
     };
 }
 
