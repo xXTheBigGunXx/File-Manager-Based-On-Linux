@@ -15,7 +15,9 @@ class CommandLineData{
     ~CommandLineData();
     const std::string GetArgument(int index) const;
     size_t GetLength() const;
-    void ChangeToRead();
+    void ChangeToRead(const size_t index, const std::string& newElement);
+    void AddElement(const std::string& newElement);
+    void ResizeDataVector(const size_t newSize);
 };
 
 #endif

@@ -21,7 +21,6 @@ class Commands{
     static bool RemoveDirectory(const CommandLineData& CData);
     static bool ListFiles(const CommandLineData& CData);
     static bool FindFile(const CommandLineData& CData);
-    static bool PrintCommands(const CommandLineData& CData);
 };
 
 #endif

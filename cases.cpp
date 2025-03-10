@@ -16,7 +16,7 @@ int CommandTable::DistributeCommands(const CommandLineData& CData)
         {"rmdir", Commands::RemoveDirectory},
         {"ls", Commands::ListFiles},
         {"find", Commands::FindFile},
-        {"man", Commands::PrintCommands},
+        {"man", Authentication::PrintCommands},
     };
 
     if(CData.GetLength() == 0)
@@ -26,7 +26,6 @@ int CommandTable::DistributeCommands(const CommandLineData& CData)
     }
 
     const std::string CComand = CData.GetArgument(0);
-    std::cout <<CComand << '|' << std::endl;
 
     if(CComand.compare("") == 0 || hashMapOfFunction.find(CComand) == hashMapOfFunction.end())
     {

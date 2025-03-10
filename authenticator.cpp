@@ -1,9 +1,9 @@
 #include "authenticator.h"
 #include <iostream>
 
-std::string commandFileLocation = std::string("commands.md");
+const std::string Authentication::commandFileLocation = std::string("commands.md");
 
-std::unordered_set<std::string> Authentication::CFilesTypes = {".txt", ".exe", ".md"};
+std::unordered_set<std::string> Authentication::CFilesTypes = {".txt", ".exe", ".md", ".png"};
 
 bool Authentication::IsTextFile(const std::string& filesName)
 {
@@ -16,4 +16,9 @@ bool Authentication::IsTextFile(const std::string& filesName)
     return CFilesTypes.find(filesType) != CFilesTypes.end();
 }
 
-constexpr void Print()
+bool Authentication::PrintCommands(const CommandLineData& CData)
+{
+    CommandLineData temp(CData);
+    temp.AddElement(Authentication::commandFileLocation);
+    return Commands::PrintContent(temp); 
+}

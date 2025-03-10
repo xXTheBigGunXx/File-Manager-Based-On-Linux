@@ -4,12 +4,9 @@ bool Commands::RemoveFiles(const CommandLineData& CData)
 {
     for(size_t i = 1; i < CData.GetLength(); i++)
     {
-        std::string filesPath = CData.GetArgument(i);
+        const std::string filesPath = CData.GetArgument(i);
 
-        if (Authentication::IsTextFile(filesPath) == false)
-            continue;
-
-        else if(std::filesystem::remove(filesPath) == false)
+        if(std::filesystem::remove(filesPath) == false || Authentication::IsTextFile(filesPath) == false)
             std::cout << "Can't remove a file named: "<< filesPath << '\n'; 
     }
     return true;
@@ -23,7 +20,11 @@ bool Commands::CreateFile(const CommandLineData& CData)
         std::ofstream file(filesName);
 
         if(file.is_open() == false || Authentication::IsTextFile(filesName) == false)
+        {
+            std::filesystem::remove(filesName);
             std::cout << "Can't create a file: " << filesName << '\n'; 
+        }
+
         file.close();
     }
     return true;
@@ -63,7 +64,10 @@ bool Commands::Rename(const CommandLineData& CData)
         std::cout << "One of a files in not a correct type of format file:" << firstFile << ", " << secondFile << '\n';
         return false;
 
-    std::filesystem::rename(firstFile, secondFile);
+    if(std::filesystem::rename(firstFile, secondFile))
+    {
+        
+    }
     return true;
 }
 
@@ -90,11 +94,11 @@ bool Commands::PrintContent(const CommandLineData& CData)
         if(CData.GetArgument(1).compare(">>") == 0)
         {
             CommandLineData temp(CData);
-            temp.ChangeToRead();
+            temp.ChangeToRead(1, ">");
             PrintContent(temp);
             file.open(CData.GetArgument(2), std::ios::app);
         }
-        else if (std::string(std::string(CData.GetArgument(1))).compare(">") == 0)
+        else if (std::string(CData.GetArgument(1)).compare(">") == 0)
         {
             file.open(CData.GetArgument(2), std::ios::trunc);
         }

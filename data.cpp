@@ -1,11 +1,23 @@
 #include "data.h"
 
-void CommandLineData::ChangeToRead()
+void CommandLineData::ChangeToRead(const size_t index, const std::string& newElement)
 {
-    if(this->data.size() != 3)
+    if(index < 0 || index >= this->GetLength())
         return;
-    std::swap(this->data[1], this->data[2]);
+    this->data[index] = newElement;
     this->data.resize(2);
+}
+
+void CommandLineData::AddElement(const std::string& newElement)
+{
+    this->data.push_back(newElement);
+}
+
+void CommandLineData::ResizeDataVector(const size_t newSize)
+{
+    if(newSize < 0 || newSize > this->GetLength())
+        return;
+    this->data.resize(newSize);
 }
 
 CommandLineData::CommandLineData(CommandLineData* copyData)
