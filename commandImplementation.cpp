@@ -33,21 +33,26 @@ bool Commands::CreateFile(const CommandLineData& CData)
 bool Commands::CreateAndWrite(const CommandLineData& CData)
 {
     const std::string filesName = CData.GetArgument(3);
-    if(CData.GetLength() != 4 || !Authentication::IsTextFile(filesName))
+    
+    if(!Authentication::CommandLineCheck(4, CData.GetLength()))
+        return false;
+
+    else if (!Authentication::IsTextFile(filesName) == false)
     {
-        return false;  
+        std::cout << "Incorrect file type.\n";
+        return false;
     }
 
     std::ofstream file;
 
-    if(std::string(CData.GetArgument(2)).compare(">>") == 0)
+    if(CData.GetArgument(2).compare(">>") == 0)
         file.open(filesName, std::ios::app);
 
-    else if (std::string(CData.GetArgument(2)).compare(">") == 0)
+    else if (CData.GetArgument(2).compare(">") == 0)
         file.open(filesName, std::ios::trunc);
     else
     {
-        std::cout << "Cannot identifie the file mode: " << CData.GetArgument(2) << '\n'; 
+        std::cout << "Cannot identifie the file append mode: " << CData.GetArgument(2) << '\n'; 
         return false;
     }
 
@@ -60,14 +65,15 @@ bool Commands::Rename(const CommandLineData& CData)
     const std::string firstFile = CData.GetArgument(1);
     const std::string secondFile = CData.GetArgument(2);
 
-    if(CData.GetLength() != 3 || !Authentication::IsTextFile(firstFile) || !Authentication::IsTextFile(secondFile))
-        std::cout << "One of a files in not a correct type of format file:" << firstFile << ", " << secondFile << '\n';
+    if(!Authentication::CommandLineCheck(3, CData.GetLength()))
         return false;
 
-    if(std::filesystem::rename(firstFile, secondFile))
+    else if (!Authentication::IsTextFile(firstFile) || !Authentication::IsTextFile(secondFile))
     {
-        
+        std::cout << "One of a files in not a correct type of format file:" << firstFile << ", " << secondFile << '\n';
+        return false;
     }
+    std::filesystem::rename(firstFile, secondFile);
     return true;
 }
 

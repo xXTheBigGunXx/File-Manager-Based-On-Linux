@@ -17,6 +17,7 @@ private:
 public:
     static bool IsTextFile(const std::string& filesName);
     static bool PrintCommands(const CommandLineData& CData);
+    static bool CommandLineCheck(const size_t size, const size_t commandLineSize);
 };
 
 #endif
