@@ -1,38 +1,44 @@
 #include "data.h"
-#include <cstring>
+
+void CommandLineData::ChangeToRead()
+{
+    if(this->data.size() != 3)
+        return;
+    std::swap(this->data[1], this->data[2]);
+    this->data.resize(2);
+}
+
+CommandLineData::CommandLineData(CommandLineData* copyData)
+{
+    this->data.assign(copyData->data.begin(), copyData->data.end());
+}
 
 CommandLineData::CommandLineData(int argc, char* argv[])
 {
-    len = static_cast<size_t>(argc - 1);
-    data = new char*[len];
+    this->data.reserve(static_cast<size_t>(argc - 1));
 
-    for(size_t i = 0; i < len; i++)
+    for(size_t i = 1; i < static_cast<size_t>(argc); i++)  
     {
-        data[i] = new char[strlen(argv[i + 1]) + 1];
-        strcpy(data[i], argv[i + 1]);
+        this->data.push_back(std::string(argv[i]));
     }
 }
 
 CommandLineData::~CommandLineData()
 {
-    for(size_t i = 0; i < len ;i++)
-    {
-        delete[] data[i];
-    }
-    delete[] data;
+    this->data.clear();
 }
 
-const char* CommandLineData::GetArgument(int index) const
+const std::string CommandLineData::GetArgument(int index) const
 {
-    if(index < 0 || this->len <= index)
+    if(index < 0 || this->data.size() <= index)
     {
-        return nullptr;
+        return std::string("");
     }
 
-    return this->data[index];
+    return std::string(this->data[index]);
 }
 
 size_t CommandLineData::GetLength() const
 {
-    return this->len;
+    return this->data.size();
 }

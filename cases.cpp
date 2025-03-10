@@ -1,4 +1,5 @@
 #include "cases.h"
+#include "authenticator.h"
 
 using namespace xx;
 
@@ -15,27 +16,25 @@ int CommandTable::DistributeCommands(const CommandLineData& CData)
         {"rmdir", Commands::RemoveDirectory},
         {"ls", Commands::ListFiles},
         {"find", Commands::FindFile},
+        {"man", Commands::PrintCommands},
     };
 
     if(CData.GetLength() == 0)
     {
-        std::cout << "Length is 0" <<std::endl;
+        std::cout << "No command line arguments are passed into a file.\n";
         return -1;
     }
 
-    if(CData.GetArgument(0) == nullptr)
+    const std::string CComand = CData.GetArgument(0);
+    std::cout <<CComand << '|' << std::endl;
+
+    if(CComand.compare("") == 0 || hashMapOfFunction.find(CComand) == hashMapOfFunction.end())
     {
-        std::cout << "No second argument" << std::endl;
+        std::cout << "Cannot identifie the command.\n";
         return -1;
     }
 
-    const std::string CComand = std::string(CData.GetArgument(0));
-
-    if(hashMapOfFunction.find(CComand) == hashMapOfFunction.end())
-    {
-        return false;
-    }
-
-    auto func = hashMapOfFunction.at(CComand);
+    bool (*func)(const CommandLineData&) = hashMapOfFunction.at(CComand);
     return func(CData);
+    return 0;
 }

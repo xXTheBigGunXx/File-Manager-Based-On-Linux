@@ -2,6 +2,7 @@
 #define COMMANDIMPLEMENTATION_H
 
 #include "data.h"
+#include "authenticator.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -20,6 +21,7 @@ class Commands{
     static bool RemoveDirectory(const CommandLineData& CData);
     static bool ListFiles(const CommandLineData& CData);
     static bool FindFile(const CommandLineData& CData);
+    static bool PrintCommands(const CommandLineData& CData);
 };
 
 #endif

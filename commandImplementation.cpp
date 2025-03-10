@@ -4,9 +4,13 @@ bool Commands::RemoveFiles(const CommandLineData& CData)
 {
     for(size_t i = 1; i < CData.GetLength(); i++)
     {
-        std::filesystem::path filesPath = std::string(CData.GetArgument(i));
-        if(std::filesystem::remove(filesPath) == false)
-            throw std::runtime_error("Files path is incorrect");
+        std::string filesPath = CData.GetArgument(i);
+
+        if (Authentication::IsTextFile(filesPath) == false)
+            continue;
+
+        else if(std::filesystem::remove(filesPath) == false)
+            std::cout << "Can't remove a file named: "<< filesPath << '\n'; 
     }
     return true;
 }
@@ -15,10 +19,11 @@ bool Commands::CreateFile(const CommandLineData& CData)
 {
     for(size_t i = 1; i < CData.GetLength(); i++)
     {
-        std::ofstream file(std::string(CData.GetArgument(i)));
+        const std::string filesName = CData.GetArgument(i);
+        std::ofstream file(filesName);
 
-        if(file.is_open() == false)
-            throw std::runtime_error("Can't create a file!");
+        if(file.is_open() == false || Authentication::IsTextFile(filesName) == false)
+            std::cout << "Can't create a file: " << filesName << '\n'; 
         file.close();
     }
     return true;
@@ -26,18 +31,24 @@ bool Commands::CreateFile(const CommandLineData& CData)
 
 bool Commands::CreateAndWrite(const CommandLineData& CData)
 {
-    if(CData.GetLength() != 4)
+    const std::string filesName = CData.GetArgument(3);
+    if(CData.GetLength() != 4 || !Authentication::IsTextFile(filesName))
+    {
         return false;  
+    }
 
     std::ofstream file;
-    std::cout << CData.GetArgument(2) <<std::endl;
 
     if(std::string(CData.GetArgument(2)).compare(">>") == 0)
-        file.open(std::string(CData.GetArgument(3)), std::ios::app);
+        file.open(filesName, std::ios::app);
+
     else if (std::string(CData.GetArgument(2)).compare(">") == 0)
-        file.open(std::string(CData.GetArgument(3)), std::ios::trunc);
+        file.open(filesName, std::ios::trunc);
     else
+    {
+        std::cout << "Cannot identifie the file mode: " << CData.GetArgument(2) << '\n'; 
         return false;
+    }
 
     file << CData.GetArgument(1);
     return true;
@@ -45,9 +56,14 @@ bool Commands::CreateAndWrite(const CommandLineData& CData)
 
 bool Commands::Rename(const CommandLineData& CData)
 {
-    if(CData.GetLength() != 3)
+    const std::string firstFile = CData.GetArgument(1);
+    const std::string secondFile = CData.GetArgument(2);
+
+    if(CData.GetLength() != 3 || !Authentication::IsTextFile(firstFile) || !Authentication::IsTextFile(secondFile))
+        std::cout << "One of a files in not a correct type of format file:" << firstFile << ", " << secondFile << '\n';
         return false;
-    std::filesystem::rename(std::string(CData.GetArgument(1)), std::string(CData.GetArgument(2)));
+
+    std::filesystem::rename(firstFile, secondFile);
     return true;
 }
 
@@ -55,12 +71,15 @@ bool Commands::PrintContent(const CommandLineData& CData)
 {
     if(CData.GetLength() == 2)
     {
-        std::ifstream file(std::string(CData.GetArgument(1)));
+        std::string filesPath = CData.GetArgument(1);
+        if(!Authentication::IsTextFile(filesPath))
+            return false;
 
-        std::string line;
-        while(file.is_open() == true && std::getline(file, line))
+        std::ifstream file(filesPath);
+
+        while(file.is_open() == true && std::getline(file, filesPath))
         {
-            std::cout << line << '\n';
+            std::cout << filesPath << '\n';
         }
         return true;
     }
@@ -68,13 +87,16 @@ bool Commands::PrintContent(const CommandLineData& CData)
     {
         std::ofstream file;
 
-        if(std::string(CData.GetArgument(1)).compare(">>") == 0)
+        if(CData.GetArgument(1).compare(">>") == 0)
         {
-            file.open((std::string(CData.GetArgument(2))), std::ios::app);
+            CommandLineData temp(CData);
+            temp.ChangeToRead();
+            PrintContent(temp);
+            file.open(CData.GetArgument(2), std::ios::app);
         }
         else if (std::string(std::string(CData.GetArgument(1))).compare(">") == 0)
         {
-            file.open(std::string(CData.GetArgument(2)), std::ios::trunc);
+            file.open(CData.GetArgument(2), std::ios::trunc);
         }
         else
         {
@@ -87,7 +109,6 @@ bool Commands::PrintContent(const CommandLineData& CData)
             if(line.find("^D") != std::string::npos)
                 return false;
             file << line << '\n';
-            std::cout << line << std::endl;
         }
         
         file.close();
@@ -103,14 +124,14 @@ bool Commands::MakeDirectory(const CommandLineData& CData)
 {
     if(CData.GetLength() != 2)
         throw std::runtime_error("!!!");
-    return std::filesystem::create_directories(std::string(CData.GetArgument(1)));   
+    return std::filesystem::create_directories(CData.GetArgument(1));   
 }
 
 bool Commands::RemoveDirectory(const CommandLineData& CData)
 {
     if(CData.GetLength() != 2)
         throw std::runtime_error("!!!");
-    return std::filesystem::remove(std::string(CData.GetArgument(1)));
+    return std::filesystem::remove(CData.GetArgument(1));
 }
 
 bool Commands::ListFiles(const CommandLineData& CData)
@@ -128,9 +149,9 @@ bool Commands::FindFile(const CommandLineData& CData)
     if(CData.GetLength() != 4)
         throw std::runtime_error("!!!");
     
-    std::filesystem::path directPath = std::string(CData.GetArgument(1));
-    std::string options = std::string(CData.GetArgument(2));
-    std::string filesName = std::string(CData.GetArgument(3));
+    std::filesystem::path directPath = CData.GetArgument(1);
+    std::string options = CData.GetArgument(2);
+    std::string filesName = CData.GetArgument(3);
 
     if (!std::filesystem::exists(directPath) || !std::filesystem::is_directory(directPath))
         throw std::runtime_error("Invalid directory!");
@@ -170,5 +191,5 @@ std::string Commands::LoopDirectory(std::filesystem::path& directoriesPath, cons
         }
     }
     
-    return "";
+    return std::string("");
 }
