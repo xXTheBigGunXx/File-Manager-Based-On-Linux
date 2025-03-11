@@ -11,6 +11,7 @@
 class Commands{
     private:
     static std::string LoopDirectory(std::filesystem::path& directoriesPath, const std::string& fileName);
+    static bool MoveToDirectory(const CommandLineData& CData);
     public:
     static bool RemoveFiles(const CommandLineData& CData);
     static bool CreateFile(const CommandLineData& CData);

@@ -37,7 +37,7 @@ bool Commands::CreateAndWrite(const CommandLineData& CData)
     if(!Authentication::CommandLineCheck(4, CData.GetLength()))
         return false;
 
-    else if (!Authentication::IsTextFile(filesName) == false)
+    else if (Authentication::IsTextFile(filesName) == false)
     {
         std::cout << "Incorrect file type.\n";
         return false;
@@ -65,15 +65,46 @@ bool Commands::Rename(const CommandLineData& CData)
     const std::string firstFile = CData.GetArgument(1);
     const std::string secondFile = CData.GetArgument(2);
 
-    if(!Authentication::CommandLineCheck(3, CData.GetLength()))
-        return false;
-
-    else if (!Authentication::IsTextFile(firstFile) || !Authentication::IsTextFile(secondFile))
+    if(CData.GetLength() < 3)
+    {
+        return Authentication::CommandLineCheck(3, CData.GetLength());
+    }
+    else if ((CData.GetLength() == 3 && std::filesystem::is_directory(CData.GetArgument(2))) || CData.GetLength() > 3)
+    {
+        return MoveToDirectory(CData);
+    }
+    else if (CData.GetLength() == 3 && (!Authentication::IsTextFile(firstFile) || !Authentication::IsTextFile(secondFile)))
     {
         std::cout << "One of a files in not a correct type of format file:" << firstFile << ", " << secondFile << '\n';
         return false;
     }
     std::filesystem::rename(firstFile, secondFile);
+    return true;
+}
+
+bool Commands::MoveToDirectory(const CommandLineData& CData)
+{
+    //std::cout << "Move function!\n";
+    std::string directory = CData.GetArgument(CData.GetLength() - 1);
+
+    std::cout << directory << std::endl;
+
+    if(std::filesystem::is_directory(directory) == false)
+    {
+        std::cout << "Last argument of a command is not a directory: " << directory << '\n';
+        return false;
+    }
+
+    for(size_t i = 1; i < CData.GetLength() - 1; i++)
+    {
+        const std::string filesName = CData.GetArgument(i);
+        if(std::filesystem::is_regular_file(filesName) == false || Authentication::IsTextFile(filesName) == false)
+        {
+            std::cout << "Cannot move the file: " << filesName << '\n'; 
+        }else{
+            std::filesystem::rename(filesName, directory + "\\" + filesName);
+        }
+    }
     return true;
 }
 

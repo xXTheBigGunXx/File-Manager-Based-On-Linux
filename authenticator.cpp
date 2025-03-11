@@ -8,11 +8,12 @@ std::unordered_set<std::string> Authentication::CFilesTypes = {".txt", ".exe", "
 bool Authentication::IsTextFile(const std::string& filesName)
 {
     const size_t CIndexOfDot = filesName.rfind('.');
-    if(CIndexOfDot == filesName.length())
+    if(CIndexOfDot == filesName.length() || CIndexOfDot == std::string::npos)
     {
         return false;
     }
     const std::string filesType = filesName.substr(CIndexOfDot);
+
     return CFilesTypes.find(filesType) != CFilesTypes.end();
 }
 
