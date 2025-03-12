@@ -39,18 +39,3 @@ CommandLineData::~CommandLineData()
 {
     this->data.clear();
 }
-
-const std::string CommandLineData::GetArgument(int index) const
-{
-    if(index < 0 || this->data.size() <= index)
-    {
-        return std::string("");
-    }
-
-    return std::string(this->data[index]);
-}
-
-size_t CommandLineData::GetLength() const
-{
-    return this->data.size();
-}

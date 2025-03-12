@@ -84,7 +84,6 @@ bool Commands::Rename(const CommandLineData& CData)
 
 bool Commands::MoveToDirectory(const CommandLineData& CData)
 {
-    //std::cout << "Move function!\n";
     std::string directory = CData.GetArgument(CData.GetLength() - 1);
 
     std::cout << directory << std::endl;
