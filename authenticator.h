@@ -8,11 +8,12 @@
 #include <cstddef>
 #include <unordered_set>
 #include <string>
+#include <string_view>
 
 class Authentication
 {
 private:
-    static const std::string commandFileLocation;
+    static std::string_view commandFileLocation;
     static std::unordered_set<std::string> CFilesTypes;
 public:
     static bool IsTextFile(const std::string& filesName);

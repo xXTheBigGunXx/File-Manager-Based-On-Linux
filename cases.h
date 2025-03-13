@@ -10,8 +10,8 @@
 
 namespace xx
 {
-
-    class CommandTable{
+    class CommandTable
+    {
     private:
     public:
         CommandTable();

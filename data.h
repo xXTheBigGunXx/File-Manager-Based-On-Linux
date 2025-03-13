@@ -12,7 +12,7 @@ class CommandLineData{
     public:
     CommandLineData(int argc, char* argv[]);
     CommandLineData(CommandLineData* copyData);
-    ~CommandLineData();
+    ~CommandLineData() noexcept;
     inline const std::string GetArgument(int index) const noexcept
     {
         if(index < 0 || this->data.size() <= index)
