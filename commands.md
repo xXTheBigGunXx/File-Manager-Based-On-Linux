@@ -17,5 +17,6 @@
     -ls:
         * ls - command is used to print current directories content.
         * ls <filesFormat> - command is used to print only the certaint type of files in a current directory.
-    -find <directoriesPath> <constantVariable> <filename> - command is used to find the file in specified directory. (directoriesPath is '.' searching is in current path. constantVariable should always have dash in front of its have).
+    -find <directoriesPath> <constantVariable> <filename> - command is used to find the file in specified directory. (directoriesPath is '.' searching is in current path. constantVariable should always have dash in front of its have and commands: "-path" - if found displays the files path; "-name" - if found displays the files name).
+
 

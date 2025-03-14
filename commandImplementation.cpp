@@ -27,7 +27,7 @@ bool Commands::CreateFile(const CommandLineData& CData)
         {
             std::cout << "Can't create a file: " << filesName << '\n';
             std::error_code ec;
-            if(std::filesystem::remove(filesName, ec))
+            if(std::filesystem::remove(filesName, ec) == false)
             {
                 std::cout << "Filesystem library throws error: "<<ec.message()<<'\n';
             }  
@@ -243,15 +243,18 @@ bool Commands::ListFiles(const CommandLineData& CData)
 
 bool Commands::FindFile(const CommandLineData& CData)
 {
-    if(CData.GetLength() != 4)
+
+    if(!Authentication::CommandLineCheck(4, CData.GetLength()))
     {
-        std::cout << "Not enought arguments for the command.\n";
         return false;   
     }
 
     std::filesystem::path directPath = CData.GetArgument(1);
-    std::string options = CData.GetArgument(2);
-    std::string filesName = CData.GetArgument(3);
+    const std::string options = CData.GetArgument(2);
+    const std::string filesName = CData.GetArgument(3);
+
+    bool displayName = false;
+    bool displayPath = false;
 
     if(directPath.compare(".") == 0)
     {
@@ -267,15 +270,31 @@ bool Commands::FindFile(const CommandLineData& CData)
         std::cout << "Invalid second argument: " << options << '\n';
         return false;
     }
-
-    const std::string name = LoopDirectory(directPath, filesName);
-    if(name.empty() == 0)
-    {
-        std::cout << name << '\n';
-        return true;
+    else{
+        if(options.compare("-name") == 0)
+            displayName = true;
+        else if(options.compare("-path") == 0)
+            displayPath = true;
+        else
+        {
+            std::cout << "Invalid dash options: "<< options << '\n';
+            return false;
+        }
     }
 
-    std::cout << "File is not found." << '\n';
+    const std::string path = LoopDirectory(directPath, filesName);
+    if(!path.empty())
+    {
+        if(displayName)
+        {
+            const size_t index = path.rfind("\\");
+            std::cout << path.substr(index + 1) << '\n';
+        }
+        else if(displayPath)
+            std::cout << path << '\n';
+        return true;
+    }
+    std::cout << "File is not found." << path << '\n';
     return true;
 }
 
