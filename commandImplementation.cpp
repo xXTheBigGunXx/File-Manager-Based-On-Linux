@@ -300,22 +300,32 @@ bool Commands::FindFile(const CommandLineData& CData)
 
 std::string Commands::LoopDirectory(std::filesystem::path& directoriesPath, const std::string& fileName)
 {
-    for (const auto& i : std::filesystem::directory_iterator(directoriesPath))
+    try
     {
-        std::filesystem::path filesOrDirecPath = i.path();
+        for (const auto& i : std::filesystem::directory_iterator(directoriesPath))
+        {
+            std::filesystem::path filesOrDirecPath = i.path();
 
-        if (std::filesystem::is_directory(filesOrDirecPath))
-        {
-            std::string result = LoopDirectory(filesOrDirecPath, fileName);
-            if (!result.empty())
-                return result;
-        }
-        else if (std::filesystem::is_regular_file(filesOrDirecPath) && Authentication::IsTextFile(filesOrDirecPath.string()))
-        {
-            if (filesOrDirecPath.filename().string() == fileName)
-                return filesOrDirecPath.string();
+            if (!std::filesystem::exists(filesOrDirecPath) || std::filesystem::is_symlink(filesOrDirecPath))
+                continue;
+
+            if (std::filesystem::is_directory(filesOrDirecPath))
+            {
+                std::string result = LoopDirectory(filesOrDirecPath, fileName);
+                if (!result.empty())
+                    return result;
+            }
+            else if (std::filesystem::is_regular_file(filesOrDirecPath) && Authentication::IsTextFile(filesOrDirecPath.string()))
+            {
+                if (filesOrDirecPath.filename().string() == fileName)
+                    return filesOrDirecPath.string();
+            }
         }
     }
-    
-    return std::string("");
+    catch (const std::filesystem::filesystem_error& e)
+    {
+        //std::cerr << "Filesystem error: " << e.what() << '\n';
+    }
+
+    return "";
 }
